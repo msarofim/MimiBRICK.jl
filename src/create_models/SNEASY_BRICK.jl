@@ -9,7 +9,7 @@ using MimiSNEASY
 # Function to run SNEASY-BRICK climate model over historic period.
 # ------------------------------------------------------------------------------
 """
-    create_sneasy_brick(;ssprcp_scenario::String = "ssp245", start_year::Int=1850, end_year::Int=2020, glacier_model::Symbol = :gsic)
+    create_sneasy_brick(;ssprcp_scenario::String = "ssp245", start_year::Int=1850, end_year::Int=2020, glacier_model::Symbol = :mengel)
 
 Return a Mimi model instance with MimiBRICK and MimiSNEASY coupled together.
 

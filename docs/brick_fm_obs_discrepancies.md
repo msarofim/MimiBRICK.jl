@@ -88,7 +88,7 @@ all scale with GMST, so a cooler FaIR forcing drives lower total SLR.
 
 ---
 
-## 5. AIS High-Forcing Tail (SSP5-8.5)
+## 5. AIS Projections and MICI Absence
 
 **Magnitude:** BRICK-FM AIS at 2100 under SSP2-4.5 is ~43 cm (median) vs
 MAGICC-Nauels ~11 cm — BRICK-FM runs higher in the scenario level. For pulse

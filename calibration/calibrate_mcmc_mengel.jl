@@ -103,7 +103,7 @@ obs = (
 )
 
 # Modern-rate point constraints (Gaussian)
-const IMBIE_MU, IMBIE_SIG = 0.72, 0.156    # AIS 1992–2017 cm
+const IMBIE_MU, IMBIE_SIG = 0.72, 0.156    # AIS 1992–2017 cm (Bamber et al. 2018 Nature 558:219; TODO: verify σ against IMBIE 2023 Otosaka et al. ESSD which reports 2720±1390 Gt → σ≈0.38cm at 1σ)
 const DYU_MU,   DYU_SIG   = 2.127, 0.148   # GSIC 1961–2003 cm
 
 # ---- free physical parameters (name, component, symbol, prior) ----

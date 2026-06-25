@@ -24,7 +24,7 @@ late-21st-century and post-2100 glacier contributions.
 The Mengel emulator uses a saturating equilibrium S_eq(T) = a(1 − exp(−b(T − T_LIA))),
 which asymptotes to a finite maximum `a`. A sustained warming T* commits only S_eq(T*)
 < a, preserving a temperature-appropriate remnant. The two timescales (τ_fast ≈ 40 yr,
-τ_slow ≈ 250 yr) reflect the observed glacier size distribution: small, low-elevation
+τ_slow ≈ 200–400 yr, calibrated prior mean 300 yr) reflect the observed glacier size distribution: small, low-elevation
 glaciers respond quickly; large, high-altitude ice caps respond slowly. A single
 timescale cannot simultaneously fit the rapid early-20th-century discharge and the
 slower modern rate.

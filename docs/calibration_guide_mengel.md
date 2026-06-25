@@ -23,14 +23,12 @@ You do NOT need to re-run for:
 The calibration runs in three steps. Production runs need a multi-core machine
 (NYU Torch `cs` partition recommended; see the `nyu-torch-hpc` skill for setup).
 
-### Step 1: MAP point estimate
+### Step 1: Starting point for MCMC
 
-```
-julia --project=. calibration/calibrate_full_joint_mengel.jl
-```
-
-Outputs `outputs/calib_full_joint_params.csv` — the maximum a posteriori (MAP)
-parameter vector. Used as the MCMC starting point. Runtime: ~5 minutes local.
+No separate MAP-optimization script exists for the Mengel calibration. The MCMC
+starts from the prior means in `calibrate_mcmc_mengel.jl`. Once a first run has
+completed, pass its output as `adapted_cov.csv` to seed the proposal covariance
+for subsequent runs (the script picks it up automatically if present).
 
 ### Step 2: MCMC chains (production)
 
