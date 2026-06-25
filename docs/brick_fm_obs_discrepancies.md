@@ -8,11 +8,11 @@ reviewing PR2.
 
 | Component | Discrepancy | Magnitude | Root cause | Status |
 |-----------|-------------|-----------|------------|--------|
-| Thermal expansion | Overshoots steric obs | +0.51 cm vs NOAA steric @2025 | SNEASY MAP OHC pre-1971 ramp inflates `te_α` calibration | Known; calibration fix available |
+| Thermal expansion | Overshoots steric obs | +0.51 cm vs NOAA steric @2025 | Unconstrained 1900–1953 OHC window; persists after post-2018 re-fit | Known; calibration fix available |
 | GSIC | Undershoots 1900 cumulative | −4 cm vs Frederikse (−3.25 vs −7.27 cm) | Mengel melt rate ∝ T-level, not warming rate | Structural emulator limit |
 | GIS | Undershoots obs at 1900 | ~0.53 vs 2.1 cm (Frederikse), 1.45 cm (IGCC) | FaIR GMST ~0.1 °C cooler than IGCC historically | Forcing-driven; not a BRICK issue |
 | Total GMSL | Slightly low vs Dangendorf 2024 | Consistent with GMST gap | Same as GIS | Forcing-driven |
-| AIS high-forcing tail | Conservative at SSP5-8.5 | — | MICI not in BRICK AIS formulation | Known BRICK limitation |
+| AIS high-forcing tail | Upper tail bounded | — | MICI not in BRICK AIS formulation | Known BRICK limitation |
 
 ---
 
@@ -20,18 +20,18 @@ reviewing PR2.
 
 **Magnitude:** At 2025, BRICK TE overshoots NOAA steric by approximately +0.51 cm.
 
-**Root cause:** The FM posterior calibrates `te_α` to ~0.164, roughly 3× the
-physics-based value in Tony's original calibration (~0.057). This traces to the
-FaIR-mean OHC forcing used in calibration: FaIR's pre-1971 OHC trajectory
-carries a large positive ramp (~+35 ZJ above 1850) relative to modern observational
-products (~+14 ZJ, e.g. Cheng IAPv4.2). BRICK compensated by inflating `te_α`
-to match the high OHC input. When driven by FaIR or modern obs (lower OHC), TE
-is consequently overpredicted.
+**Root cause:** The FM `te_α` (~0.164) and Wong et al.'s original value (~0.057)
+differ because they were calibrated against different OHC forcing trajectories.
+Wong calibrated against SNEASY's internal OHC, which rises ~+35 ZJ over
+1900–1971 — substantially larger than modern observation-anchored products over
+the same period (~+14 ZJ). The FM calibrates against the FaIR mean, which is
+close to the IGCC 2024 multi-product compilation (~+37–38 ZJ over 1971–2018);
+Cheng IAPv4.2 (+31 ZJ) sits below IGCC and FaIR over this window.
 
-Note: the IGCC multi-product OHC average is closer to Gouretski 2007 (~+26 ZJ)
-than to Cheng — so "overshoot vs steric" depends on which obs product is used.
-The Cheng product is the low-side outlier; against Gouretski the overshoot
-largely disappears.
+The +0.51 cm overshoot vs NOAA steric at 2025 persists even after re-fitting
+against post-2018 NOAA steric data (te_α shifted only 0.164→0.159). The
+residual overshoot most likely originates in the 1900–1953 period, where no
+direct ocean heat observations constrain the calibration.
 
 **Fix:** Recalibrate with a modern OHC product (IGCC or Zanna+Cheng splice
 anchored to FaIR mean). No model changes needed.
@@ -84,16 +84,21 @@ all scale with GMST, so a cooler FaIR forcing drives lower total SLR.
 
 ## 5. AIS High-Forcing Tail (SSP5-8.5)
 
-**Magnitude:** 2100 upper-tail AIS projections under SSP5-8.5 are conservative
-relative to process-model studies that include marine ice cliff instability (MICI).
+**Magnitude:** BRICK-FM AIS at 2100 under SSP2-4.5 is ~43 cm (median) vs
+MAGICC-Nauels ~11 cm — BRICK-FM runs higher in the scenario level. For pulse
+marginals (SC-CO2), the ordering reverses: MAGICC AIS marginal T-sensitivity
+is ~6× higher than BRICK's at 2100 (see `brick_fm_changes_and_rationale.md`
+section C).
 
-**Root cause:** BRICK's Antarctic Ice Sheet component does not include MICI. At
-very high warming rates the model cannot produce the rapid retreat that some
-process models project.
+**Root cause:** BRICK does not include marine ice cliff instability (MICI),
+which formally bounds the extreme upper tail. The Mengel committed-melt
+mechanism drives a large time-integrated AIS contribution that produces a
+high scenario level; MAGICC-Nauels has higher instantaneous T-sensitivity.
+The two emulators represent different physical mechanisms, not a
+conservative-vs-aggressive ordering.
 
-**Status:** Known limitation of BRICK's AIS formulation, not specific to the FM
-calibration. Documented in the BRICK literature. Users needing MICI-inclusive
-projections should combine with dedicated ice-sheet models.
+**Status:** Known limitation of BRICK's AIS formulation. Users needing
+MICI-inclusive projections should combine with dedicated ice-sheet models.
 
 ---
 

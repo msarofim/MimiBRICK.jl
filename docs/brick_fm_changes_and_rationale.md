@@ -134,26 +134,27 @@ this at the distribution mean without requiring users to manage external seeds.
 
 ### A. Residual thermal expansion overshoot
 
-The FM posterior calibrates `te_α` to ~0.164, roughly 3× the original Wong
-et al. value of 0.057. This is not a sign of miscalibration: Wong's `te_α`
-was calibrated against SNEASY's internal OHC, which carries a large
-pre-observational ramp (~+35 ZJ above 1850 by 1971) not present in any
-observation-anchored product. FaIR's mean OHC (+38 ZJ, 1971–2018) is close
-to the IGCC 2024 multi-product compilation (+37 ZJ, Palmer & von Schuckmann),
-and both sit well above Cheng IAPv4.2 (+31 ZJ) — Cheng is the low-side
-outlier among modern products, not IGCC or FaIR. The FM's higher `te_α` is
-therefore closer to the physics-based value; Wong's 0.057 was implicitly
-conditioned on SNEASY's artificially large early-century OHC ramp.
+The FM posterior calibrates `te_α` to ~0.164, roughly 3× Wong et al.'s
+original value of 0.057. The two values reflect different OHC forcing
+assumptions during calibration. Wong calibrated against SNEASY's internal
+OHC trajectory, which rises ~+35 ZJ over 1900–1971 — substantially larger
+than modern observation-anchored products over the same period (~+14 ZJ for
+FaIR mean, Zanna+Cheng). The FM calibrates against the FaIR mean, which lies
+close to the IGCC 2024 multi-product compilation (Palmer & von Schuckmann;
++38 vs +37 ZJ over 1971–2018). Among modern products, Cheng IAPv4.2 (+31 ZJ)
+sits on the low side; IGCC and FaIR are in close agreement.
 
-A residual ~+0.5 cm TE overshoot vs Frederikse steric remains at 2025. Its
-likely cause is the 1900–1953 window, where SNEASY added ~+35 ZJ but
-observation-anchored products (including FaIR) add only ~+14 ZJ — the
-calibration data (Gouretski, starting 1953) do not constrain this period
-directly, so the posterior cannot fully resolve it.
+A residual ~+0.5 cm TE overshoot vs NOAA steric observations persists at 2025,
+even after the posterior was re-fit against post-2018 NOAA steric data (which
+changed te_α only slightly, 0.164→0.159). The overshoot appears to be driven
+by the 1900–1953 period, where no direct ocean heat observations constrain
+the calibration and the model accumulates more OHC than the observation-anchored
+products suggest.
 
 **Potential fix:** Extend the calibration OHC target back to 1850 using a
 pre-ARGO reconstruction (e.g. Zanna 2019 spliced to IGCC at 1971), which
-would better constrain `te_α` over the full historical window.
+would better constrain `te_α` over the full historical window including the
+early-century period.
 
 ### B. GSIC structural undershoot at 1900
 
