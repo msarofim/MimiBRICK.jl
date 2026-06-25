@@ -14,7 +14,7 @@ change, and known remaining limitations flagged as candidates for future work.
 (Wigley-Raper-Bakker, WRB) is replaced by the Mengel et al. 2016 (PNAS 113:2597)
 temperature-dependent-equilibrium emulator with two relaxation timescales.
 
-**Rationale:** The WRB formulation has a structural pathology: any sustained
+**Rationale:** The WRB formulation leads to the behavior that sustained
 temperature above the equilibrium threshold eventually melts the *entire* glacier
 reservoir. Physical glaciers and ice caps retain a temperature-appropriate remnant
 at any finite warming level (Marzeion et al. 2012). This matters for projections
@@ -105,10 +105,12 @@ it the natural choice for studies that couple BRICK to FaIR-driven ensembles. By
 calibrating BRICK against the FaIR mean trajectory, the posterior is conditioned on
 a climate forcing that is consistent with the projection runs.
 
-Note: FaIR's historical GMST runs approximately 0.1 °C cooler than IGCC
-observational estimates over the 20th century (a known FaIR property, not a
-calibration error). This slightly depresses GIS and GSIC contributions relative
-to observation-forced runs; see `brick_fm_obs_discrepancies.md` for details.
+Note: the FaIR mean trajectory used for calibration runs approximately 0.1 °C
+below IGCC observational estimates at 2024. This reflects the emissions scenario
+(RFF-SP draws follow SSP2-4.5-like paths; real-world emissions post-2015 ran
+warmer due to faster aerosol reductions and higher CH4), not an intrinsic FaIR
+model bias. The effect slightly depresses GIS and GSIC contributions relative to
+observation-forced runs; see `brick_fm_obs_discrepancies.md` for details.
 
 ---
 
