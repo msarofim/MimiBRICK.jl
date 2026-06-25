@@ -157,16 +157,27 @@ budget added to the two-timescale structure. Alternatively, a Marzeion-style
 natural melt baseline (separate from the temperature-forced term) could absorb
 the early-century residual.
 
-### C. MICI in Antarctic Ice Sheet projections
+### C. Antarctic Ice Sheet projections and MICI
 
-BRICK's AIS component does not include marine ice cliff instability (MICI). Under
-high-forcing scenarios (SSP5-8.5, late 21st century), the upper tail of AIS
-projections is consequently conservative relative to process-model studies that
-include MICI.
+BRICK's AIS component does not include marine ice cliff instability (MICI).
+However, BRICK-Mengel does not produce conservative AIS projections overall:
+in a direct comparison against the MAGICC-Nauels 2025 emulator (SSP2-4.5,
+600-member AR6 drawnset), BRICK-Mengel AIS @2100 is ~43 cm vs MAGICC ~11 cm
+at the median, and BRICK's p95 total SLR (108 cm) exceeds MAGICC's (87 cm).
+The Mengel two-timescale committed-melt mechanism drives a large time-integrated
+AIS contribution that more than offsets the absence of MICI.
 
-**Path forward:** This is a known BRICK limitation (discussed in Wong et al. 2022)
-and would require structural changes to the AIS component, likely meriting its own
-PR.
+There is a level-vs-marginal inversion: for pulse experiments (SC-CO2), MAGICC's
+AIS *marginal* T-sensitivity is ~6× higher than BRICK-Mengel's at 2100, meaning
+MAGICC assigns a higher SC-CO2 despite a lower scenario AIS level. The two
+emulators represent genuinely different physical mechanisms (MAGICC: high
+instantaneous T-sensitivity; BRICK-Mengel: high committed slow-timescale melt),
+not simply a conservative-vs-aggressive ordering.
+
+Formally, MICI absence does place a structural bound on BRICK's extreme upper tail
+under very high forcing, and this remains a limitation relative to process models
+that include it. Adding MICI would require structural changes to the AIS component
+and would merit its own PR.
 
 ### D. GIS undershoot from FaIR GMST bias
 
