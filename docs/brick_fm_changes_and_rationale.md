@@ -114,18 +114,17 @@ to observation-forced runs; see `brick_fm_obs_discrepancies.md` for details.
 
 ### 6. Deterministic land-water storage for reproducible ensemble runs
 
-**Change:** The `lws` parameter in `get_model` defaults to `:random` for backward
-compatibility, but `create_brick_fair` defaults to `:central` (deterministic
-0.3 mm/yr mean rate).
+**Change:** `create_brick_fair` (the recommended FM entry point) defaults to
+`lws=:central` (deterministic 0.3 mm/yr mean rate). `get_model` retains
+`lws=:random` for backward compatibility with upstream.
 
 **Rationale:** The original `get_model` draws LWS from N(0.0003, 0.00018) m/yr
 unseeded on every call, making results irreproducible build-to-build and
 representing LWS uncertainty by a single arbitrary realization rather than
-propagating it through the ensemble. For ensemble runs where BRICK is called once
-and then iterated over posterior draws (the standard usage pattern), a single
-fixed LWS realization is appropriate; the LWS uncertainty (~0.16 cm by 2100) is
-small relative to the AIS/posterior spread. The `:central` option fixes this at
-the distribution mean without requiring users to manage external seeds.
+propagating it through the ensemble. For ensemble runs (the standard FM usage),
+a single fixed LWS realization is appropriate; the LWS uncertainty (~0.16 cm by
+2100) is small relative to the AIS/posterior spread. The `:central` option fixes
+this at the distribution mean without requiring users to manage external seeds.
 
 ---
 
