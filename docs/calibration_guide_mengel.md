@@ -35,10 +35,15 @@ parameter vector. Used as the MCMC starting point. Runtime: ~5 minutes local.
 ### Step 2: MCMC chains (production)
 
 Run one chain per seed. Recommended: ≥4 seeds × ≥500 000 iterations on Torch.
+The default targets are the 1900–2026 extended set (GRACE-FO/GlaMBIE/NOAA post-2018);
+pass `--base` to use the 1900–2018 Frederikse-only targets instead.
 
 ```bash
 # Local smoke test (2000 iter, ~2 min):
 julia --project=. calibration/calibrate_mcmc_mengel.jl 2000 2026
+
+# Base targets only (1900-2018, Frederikse 2020):
+julia --project=. calibration/calibrate_mcmc_mengel.jl 2000 2026 --base
 
 # Production (example SLURM array, seeds 1-4, 500k iter each):
 sbatch calibration/run_mcmc_torch.sbatch

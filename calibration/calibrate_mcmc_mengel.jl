@@ -15,18 +15,21 @@
 ##   AR(1) noise (10): (sd, rho) × {ais, gsic, gis, steric, total}
 ## Weakly-constrained DAIS shape parameters are fixed at the prior medoid.
 ##
-## Calibration targets (1900–2018, re-referenced to 1995–2005):
-##   Frederikse 2020 AIS/GSIC/GIS/steric component time series (AR(1) likelihood)
+## Calibration targets (1900–2026 default, re-referenced to 1995–2005):
+##   Frederikse 2020 AIS/GSIC/GIS/steric 1900–2018 + post-2018 extension:
+##     GRACE-FO AIS/GIS, GlaMBIE GSIC, NOAA steric, NOAA STAR total (AR(1) likelihood)
 ##   Dangendorf 2024 total GMSL (AR(1) likelihood; LWS uncertainty folded in)
 ##   IMBIE 1992–2017 AIS rate point constraint (Gaussian)
 ##   Dyurgerov 1961–2003 GSIC rate point constraint (Gaussian)
+##   Pass --base to use the 1900–2018 base targets only (Frederikse 2020 period).
 ##
 ## See docs/calibration_guide_mengel.md for when to re-run and runtime guidance.
 ##
 ## Usage:
-##   julia --project=. calibration/calibrate_mcmc_mengel.jl [n_iter] [seed]
+##   julia --project=. calibration/calibrate_mcmc_mengel.jl [n_iter] [seed] [--base]
 ##   n_iter : MCMC iterations (default 2000 for smoke test; 500000 for production)
 ##   seed   : random seed (default 2026; use different seeds for parallel chains)
+##   --base : use 1900–2018 base targets instead of the 1900–2026 extended default
 ## ============================================================================
 
 using CSV, DataFrames, Mimi, MimiBRICK, Statistics, LinearAlgebra, Distributions, Random, Printf
@@ -36,11 +39,13 @@ const REPO    = abspath(joinpath(@__DIR__, ".."))
 const OBS_DIR = joinpath(REPO, "data", "observations")
 const OUT_DIR = joinpath(REPO, "outputs", "mcmc")
 
-const Y0, Y1 = 1850, 2018        # calibration period
-const B0, B1 = 1995, 2005        # re-reference window
+N_ITER   = length(ARGS) >= 1 ? parse(Int, ARGS[1]) : 2000
+SEED     = length(ARGS) >= 2 ? parse(Int, ARGS[2]) : 2026
+USE_BASE = "--base" in ARGS      # pass --base to use 1900-2018 targets only
 
-N_ITER = length(ARGS) >= 1 ? parse(Int, ARGS[1]) : 2000
-SEED   = length(ARGS) >= 2 ? parse(Int, ARGS[2]) : 2026
+const Y0     = 1850
+const Y1     = USE_BASE ? 2018 : 2026   # extended targets end at 2026
+const B0, B1 = 1995, 2005              # re-reference window
 
 years = collect(Y0:Y1)
 idx(y) = findfirst(==(y), years)
@@ -64,13 +69,16 @@ end
 gmst = [lc(joinpath(OBS_DIR, "fair_mean_gmst.csv"), "gmst_C")[y]   for y in years]
 ohc  = [lc(joinpath(OBS_DIR, "fair_mean_ohc.csv"),  "ohc_1e22J")[y] for y in years]
 
-targets_path = joinpath(OBS_DIR, "calibration_targets_brick_mengel.csv")
+targets_file = USE_BASE ? "calibration_targets_brick_mengel.csv" :
+                           "calibration_targets_brick_mengel_ext.csv"
+targets_path = joinpath(OBS_DIR, targets_file)
 isfile(targets_path) || error("Calibration targets not found: $targets_path\n" *
     "See data/observations/README.md for the expected format.")
 tg = CSV.read(targets_path, DataFrame)
 tgi(y) = findfirst(==(y), tg.year)
+println("Calibration targets: $targets_file  ($(USE_BASE ? "1900-2018 base" : "1900-2026 extended"))")
 
-FY  = collect(1900:2018)
+FY  = collect(1900:Y1)    # fitted years match the targets file
 fyi = [tgi(y) for y in FY]
 myi = [idx(y)  for y in FY]
 
