@@ -132,17 +132,28 @@ this at the distribution mean without requiring users to manage external seeds.
 
 ## Targets for Future Improvement
 
-### A. OHC product for thermal expansion calibration
+### A. Residual thermal expansion overshoot
 
-The FM posterior calibrates `te_α` to ~0.164 (≈3× Tony's original 0.057) because
-the FaIR mean OHC used for calibration has a large pre-1971 positive ramp
-(~+35 ZJ above 1850) relative to modern observational products (~+14 ZJ Cheng
-IAPv4.2, ~+26 ZJ Gouretski/IGCC). BRICK compensates by inflating `te_α`.
+The FM posterior calibrates `te_α` to ~0.164, roughly 3× the original Wong
+et al. value of 0.057. This is not a sign of miscalibration: Wong's `te_α`
+was calibrated against SNEASY's internal OHC, which carries a large
+pre-observational ramp (~+35 ZJ above 1850 by 1971) not present in any
+observation-anchored product. FaIR's mean OHC (+38 ZJ, 1971–2018) is close
+to the IGCC 2024 multi-product compilation (+37 ZJ, Palmer & von Schuckmann),
+and both sit well above Cheng IAPv4.2 (+31 ZJ) — Cheng is the low-side
+outlier among modern products, not IGCC or FaIR. The FM's higher `te_α` is
+therefore closer to the physics-based value; Wong's 0.057 was implicitly
+conditioned on SNEASY's artificially large early-century OHC ramp.
 
-**Fix:** Recalibrate using a modern OHC splice (IGCC multi-product mean, or
-Zanna + Cheng anchored to the FaIR mean at the calibration start). This would
-bring `te_α` closer to the physics-based value and reduce the ~+0.5 cm TE
-overshoot at 2025.
+A residual ~+0.5 cm TE overshoot vs Frederikse steric remains at 2025. Its
+likely cause is the 1900–1953 window, where SNEASY added ~+35 ZJ but
+observation-anchored products (including FaIR) add only ~+14 ZJ — the
+calibration data (Gouretski, starting 1953) do not constrain this period
+directly, so the posterior cannot fully resolve it.
+
+**Potential fix:** Extend the calibration OHC target back to 1850 using a
+pre-ARGO reconstruction (e.g. Zanna 2019 spliced to IGCC at 1971), which
+would better constrain `te_α` over the full historical window.
 
 ### B. GSIC structural undershoot at 1900
 
