@@ -175,8 +175,8 @@ However, BRICK-Mengel does not produce conservative AIS projections overall:
 in a direct comparison against the MAGICC-Nauels 2025 emulator (SSP2-4.5,
 600-member AR6 drawnset), BRICK-Mengel AIS @2100 is ~43 cm vs MAGICC ~11 cm
 at the median, and BRICK's p95 total SLR (108 cm) exceeds MAGICC's (87 cm).
-The Mengel two-timescale committed-melt mechanism drives a large time-integrated
-AIS contribution that more than offsets the absence of MICI.
+BRICK's AIS component accumulates a large time-integrated contribution through
+ocean-temperature-driven melt that more than offsets the absence of MICI.
 
 There is a level-vs-marginal inversion: for pulse experiments (SC-CO2), MAGICC's
 AIS *marginal* T-sensitivity is ~6× higher than BRICK-Mengel's at 2100, meaning

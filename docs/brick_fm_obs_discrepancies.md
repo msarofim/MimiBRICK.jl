@@ -97,9 +97,10 @@ is ~6× higher than BRICK's at 2100 (see `brick_fm_changes_and_rationale.md`
 section C).
 
 **Root cause:** BRICK does not include marine ice cliff instability (MICI),
-which formally bounds the extreme upper tail. The Mengel committed-melt
-mechanism drives a large time-integrated AIS contribution that produces a
-high scenario level; MAGICC-Nauels has higher instantaneous T-sensitivity.
+which formally bounds the extreme upper tail. BRICK's AIS component
+accumulates a large time-integrated contribution through ocean-temperature-
+driven melt, producing a high scenario level; MAGICC-Nauels has higher
+instantaneous T-sensitivity.
 The two emulators represent different physical mechanisms, not a
 conservative-vs-aggressive ordering.
 
