@@ -179,14 +179,18 @@ under very high forcing, and this remains a limitation relative to process model
 that include it. Adding MICI would require structural changes to the AIS component
 and would merit its own PR.
 
-### D. GIS undershoot from FaIR GMST bias
+### D. GIS undershoot from emissions-scenario GMST gap
 
-FaIR GMST runs ~0.1 °C cooler than IGCC observational estimates historically,
-causing a ~0.5–1 cm GIS undershoot at 2024. This is a FaIR property, not a
-BRICK calibration issue, but it propagates into BRICK-FM projections.
+The FaIR mean trajectory used for calibration runs ~0.1 °C below recent IGCC
+observational estimates at 2024, causing a ~0.5–1 cm GIS undershoot at that
+date. This gap reflects the emissions scenario (RFF-SP draws follow SSP2-4.5-like
+paths; real-world emissions post-2015 ran warmer due to faster aerosol reductions
+and higher CH4) rather than an intrinsic FaIR model bias — all calibration
+versions show the same gap when fed the same emissions.
 
-**Fix:** No BRICK change needed. Resolves if FaIR calibration is updated toward
-IGCC or if a GMST bias correction is applied upstream.
+**Fix:** No BRICK change needed. Resolves if the calibration forcing is updated
+to use observed historical emissions (e.g. Smith 2024 splice) rather than an
+SSP2-4.5-based trajectory.
 
 ### E. LWS uncertainty propagation
 
