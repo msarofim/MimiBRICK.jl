@@ -145,16 +145,16 @@ close to the IGCC 2024 multi-product compilation (Palmer & von Schuckmann;
 sits on the low side; IGCC and FaIR are in close agreement.
 
 A residual ~+0.5 cm TE overshoot vs NOAA steric observations persists at 2025,
-even after the posterior was re-fit against post-2018 NOAA steric data (which
-changed te_α only slightly, 0.164→0.159). The overshoot appears to be driven
-by the 1900–1953 period, where no direct ocean heat observations constrain
-the calibration and the model accumulates more OHC than the observation-anchored
-products suggest.
+even after the posterior was re-fit against post-2018 NOAA steric data (te_α
+shifted only 0.164→0.159). This is not addressable by switching OHC forcing
+products, since FaIR OHC and IGCC already agree closely; the issue is that
+FaIR OHC and NOAA thermosteric are not perfectly consistent products, and
+`te_α` as a single scalar cannot reconcile both simultaneously. The residual
+is likely structural within the current TE formulation.
 
-**Potential fix:** Extend the calibration OHC target back to 1850 using a
-pre-ARGO reconstruction (e.g. Zanna 2019 spliced to IGCC at 1971), which
-would better constrain `te_α` over the full historical window including the
-early-century period.
+**Status:** Accepted for this version. A more complete fix would require either
+a richer TE parameterization or an OHC forcing trajectory constructed to be
+internally consistent with the thermosteric calibration target.
 
 ### B. GSIC structural undershoot at 1900
 

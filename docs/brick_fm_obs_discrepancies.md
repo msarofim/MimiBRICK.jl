@@ -29,14 +29,17 @@ close to the IGCC 2024 multi-product compilation (~+37–38 ZJ over 1971–2018)
 Cheng et al. 2024 IAPv4.2 (ESSD 16:3517, +31 ZJ) sits below IGCC and FaIR over this window.
 
 The +0.51 cm overshoot vs NOAA steric at 2025 persists even after re-fitting
-against post-2018 NOAA steric data (te_α shifted only 0.164→0.159). The
-residual overshoot most likely originates in the 1900–1953 period, where no
-direct ocean heat observations constrain the calibration.
+against post-2018 NOAA steric data (te_α shifted only 0.164→0.159). Switching
+OHC forcing products would not resolve this: FaIR OHC and IGCC already agree
+within ~3% over 1971–2018. The residual reflects a product-consistency gap
+between FaIR OHC and NOAA thermosteric that `te_α` as a single scalar cannot
+bridge.
 
-**Fix:** Recalibrate with a modern OHC product (IGCC or Zanna+Cheng splice
-anchored to FaIR mean). No model changes needed.
+**Fix:** A richer TE parameterization, or an OHC forcing trajectory constructed
+to be internally consistent with the thermosteric calibration target.
 
-**Status:** Known and accepted for this PR. Flagged for PR3/recalibration.
+**Status:** Known and accepted for this PR. Likely structural within the current
+TE formulation.
 
 ---
 
