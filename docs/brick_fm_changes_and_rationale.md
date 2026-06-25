@@ -112,23 +112,7 @@ to observation-forced runs; see `brick_fm_obs_discrepancies.md` for details.
 
 ---
 
-### 6. Updated Greenland Ice Sheet posterior (MimiBRICK PR#93)
-
-**Change:** The GIS calibration uses the posterior from MimiBRICK PR#93 (Wong
-2026), which incorporates Frederikse 2020 GIS component data.
-
-**Rationale:** The pre-PR#93 posterior had a structural pathology: 97.6% of
-posterior draws had the parameter `b > v0`, implying essentially zero historical
-Greenland melt in the model. This is physically inconsistent with the observed
-~3–5 cm GIS contribution since 1900 (Frederikse 2020; IGCC). PR#93 replaced the
-GIS calibration target with the Frederikse 2020 GIS reconstruction, resolving
-the pathology. Post-PR#93 the GIS initial contribution at 1850 is approximately
-−7 cm (consistent with Frederikse), and the posterior no longer places mass on
-the unphysical `b > v0` region.
-
----
-
-### 7. Deterministic land-water storage for reproducible ensemble runs
+### 6. Deterministic land-water storage for reproducible ensemble runs
 
 **Change:** The `lws` parameter in `get_model` defaults to `:random` for backward
 compatibility, but `create_brick_fair` defaults to `:central` (deterministic
