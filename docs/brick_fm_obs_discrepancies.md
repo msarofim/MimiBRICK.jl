@@ -26,7 +26,7 @@ Wong calibrated against SNEASY's internal OHC, which rises ~+35 ZJ over
 1900–1971 — substantially larger than modern observation-anchored products over
 the same period (~+14 ZJ). The FM calibrates against the FaIR mean, which is
 close to the IGCC 2024 multi-product compilation (~+37–38 ZJ over 1971–2018);
-Cheng IAPv4.2 (+31 ZJ) sits below IGCC and FaIR over this window.
+Cheng et al. 2024 IAPv4.2 (ESSD 16:3517, +31 ZJ) sits below IGCC and FaIR over this window.
 
 The +0.51 cm overshoot vs NOAA steric at 2025 persists even after re-fitting
 against post-2018 NOAA steric data (te_α shifted only 0.164→0.159). The
