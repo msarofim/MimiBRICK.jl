@@ -161,7 +161,45 @@ freedom on parameters that most directly govern the magnitude and timing of melt
 
 ## Targets for Future Improvement
 
-### A. Residual thermal expansion overshoot
+Targets are ordered roughly by the product of importance and tractability.
+The main judgement call is whether MICI (target 4) outranks GSIC structural
+work (target 3): if the primary use case is SC-CO2 or high-end risk assessment,
+MICI's impact on the marginal AIS T-sensitivity is the more consequential gap
+and could be promoted above GSIC.
+
+### 1. Update calibration forcing to observed historical emissions (Smith 2024 splice)
+
+The FaIR mean trajectory used for calibration runs ~0.1 °C below recent IGCC
+observational estimates at 2024, causing a ~0.5–1 cm GIS undershoot at that
+date. This gap reflects the emissions scenario (RFF-SP draws follow SSP2-4.5-like
+paths; real-world emissions post-2015 ran warmer due to faster aerosol reductions
+and higher CH4) rather than an intrinsic FaIR model bias.
+
+**Fix:** Swap the calibration FaIR mean trajectory for one driven by Smith 2024
+observed historical emissions spliced to the scenario at 2021. No model changes
+needed; re-run FaIR mean, re-run calibration. This is the easiest and most
+clearly-scoped of the improvements.
+
+### 2. Free AIS geometry parameters in a future calibration pass
+
+The FM calibration frees `ais_ocean_temperature₀` (the primary control on
+basal melt magnitude) but fixes the remaining AIS geometry parameters (slope,
+bed height, flow rate, runoff height, precipitation, c, μ) at their prior
+medoids, to avoid poorly-identified directions in parameter space. The
+limitation is that uncertainty in the structural response shape of the AIS is
+suppressed: the posterior can adjust the rate but not the shape of the AIS
+response. If the prior medoids are poorly calibrated for FM forcing (which
+differs from the SNEASY forcing against which the original priors were
+implicitly set), systematic AIS bias could result without the posterior being
+able to correct it.
+
+**Path forward:** Address identifiability before freeing these parameters.
+Options: use the FM posterior as informative priors in a next calibration pass;
+apply physical constraints from Bedmap-derived ice-sheet geometry to regularize
+those directions; or reparameterize the AIS component into fewer identifiable
+combinations. High potential impact on AIS projection spread and level.
+
+### 3. Residual thermal expansion overshoot
 
 The FM posterior calibrates `te_α` to ~0.164, roughly 3× Wong et al.'s
 original value of 0.057. The two values reflect different OHC forcing
@@ -173,18 +211,17 @@ close to the IGCC 2024 multi-product compilation (Palmer & von Schuckmann;
 +38 vs +37 ZJ over 1971–2018).
 
 A residual ~+0.5 cm TE overshoot vs NOAA steric observations persists at 2025,
-even after the posterior was re-fit against post-2018 NOAA steric data (te_α
-shifted only 0.164→0.159). This is not addressable by switching OHC forcing
-products, since FaIR OHC and IGCC already agree closely; the issue is that
-FaIR OHC and NOAA thermosteric are not perfectly consistent products, and
-`te_α` as a single scalar cannot reconcile both simultaneously. The residual
-is likely structural within the current TE formulation.
+even after re-fitting against post-2018 NOAA steric data (te_α shifted only
+0.164→0.159). FaIR OHC and IGCC already agree closely; the issue is a
+product-consistency gap between FaIR OHC and NOAA thermosteric that `te_α`
+as a single scalar cannot bridge. The residual is likely structural.
 
-**Status:** Accepted for this version. A more complete fix would require either
-a richer TE parameterization or an OHC forcing trajectory constructed to be
-internally consistent with the thermosteric calibration target.
+**Potential fix:** Extend the calibration OHC target back to 1850 using a
+pre-ARGO reconstruction (e.g. Zanna 2019 spliced to IGCC at 1971) to better
+constrain the early-century period; or use a richer TE parameterization.
+Moderate effort; moderate impact (~0.5 cm).
 
-### B. GSIC structural undershoot at 1900
+### 4. GSIC structural undershoot at 1900
 
 The Mengel emulator still undershoots the Frederikse GSIC contribution at 1900
 by ~4 cm (model −3.25 cm vs obs −7.27 cm). This is a structural limitation: the
@@ -195,74 +232,33 @@ and the slower modern rate without pushing `tau_fast` to its physical lower boun
 **Potential fix:** A three-timescale emulator, or an explicit LIA committed-melt
 budget added to the two-timescale structure. Alternatively, a Marzeion-style
 natural melt baseline (separate from the temperature-forced term) could absorb
-the early-century residual.
+the early-century residual. Higher effort; primarily affects historical fit
+quality rather than future projections.
 
-### C. Antarctic Ice Sheet projections and MICI
+### 5. Marine ice cliff instability (MICI) in Antarctic Ice Sheet projections
 
-BRICK's AIS component does not include marine ice cliff instability (MICI).
-However, BRICK-Mengel does not produce conservative AIS projections overall:
-in a direct comparison against the MAGICC-Nauels 2025 emulator (SSP2-4.5,
-600-member AR6 drawnset), BRICK-Mengel AIS @2100 is ~43 cm vs MAGICC ~11 cm
-at the median, and BRICK's p95 total SLR (108 cm) exceeds MAGICC's (87 cm).
-BRICK's AIS component accumulates a large time-integrated contribution through
-ocean-temperature-driven melt that more than offsets the absence of MICI.
+BRICK's AIS component does not include MICI. BRICK-Mengel does not produce
+conservative AIS projections overall — at SSP2-4.5 the median AIS @2100 is
+~43 cm vs MAGICC-Nauels ~11 cm, and BRICK's p95 total SLR (108 cm) exceeds
+MAGICC's (87 cm). BRICK's AIS component accumulates a large time-integrated
+contribution through ocean-temperature-driven melt that more than offsets the
+absence of MICI for scenario-level projections.
 
-There is a level-vs-marginal inversion: for pulse experiments (SC-CO2), MAGICC's
-AIS *marginal* T-sensitivity is ~6× higher than BRICK-Mengel's at 2100, meaning
-MAGICC assigns a higher SC-CO2 despite a lower scenario AIS level. The two
-emulators represent genuinely different physical mechanisms (MAGICC: high
-instantaneous T-sensitivity; BRICK-Mengel: high committed slow-timescale melt),
-not simply a conservative-vs-aggressive ordering.
+However, there is a level-vs-marginal inversion relevant to SC-CO2: MAGICC's
+AIS marginal T-sensitivity is ~6× higher than BRICK-Mengel's at 2100. For
+applications focused on the extreme upper tail or on SC-CO2, MICI could be
+the most consequential gap, warranting promotion above targets 3 and 4.
 
-Formally, MICI absence does place a structural bound on BRICK's extreme upper tail
-under very high forcing, and this remains a limitation relative to process models
-that include it. Adding MICI would require structural changes to the AIS component
-and would merit its own PR.
+**Path forward:** Structural changes to the AIS component; likely merits its
+own PR. Highest effort of all targets listed here.
 
-### D. GIS undershoot from emissions-scenario GMST gap
-
-The FaIR mean trajectory used for calibration runs ~0.1 °C below recent IGCC
-observational estimates at 2024, causing a ~0.5–1 cm GIS undershoot at that
-date. This gap reflects the emissions scenario (RFF-SP draws follow SSP2-4.5-like
-paths; real-world emissions post-2015 ran warmer due to faster aerosol reductions
-and higher CH4) rather than an intrinsic FaIR model bias — all calibration
-versions show the same gap when fed the same emissions.
-
-**Fix:** No BRICK change needed. Resolves if the calibration forcing is updated
-to use observed historical emissions (e.g. Smith 2024 splice) rather than an
-SSP2-4.5-based trajectory.
-
-### E. AIS geometry parameters currently fixed at prior medoids
-
-The FM calibration frees `ais_ocean_temperature₀` (the primary control on
-basal melt magnitude) but fixes the remaining AIS geometry parameters (slope,
-bed height, flow rate, runoff height, precipitation, c, μ) at their prior
-medoids. This was necessary to avoid poorly-identified directions in parameter
-space — these parameters are highly correlated in the likelihood, and freeing
-them produces flat posterior surfaces and poor MCMC mixing.
-
-The limitation is that uncertainty in the structural response shape of the AIS
-(as opposed to the melt rate magnitude) is suppressed. Since the geometry
-parameters set the grounding-line retreat dynamics and the precipitation
-compensation, they interact with `ais_ocean_temperature₀`: the posterior can
-adjust the rate but not the shape of the AIS response. If the prior medoids
-are poorly calibrated for FM forcing (which differs from the SNEASY forcing
-against which the original priors were implicitly set), systematic AIS bias
-could result without the posterior being able to correct it.
-
-**Path forward:** Address the identifiability problem before freeing these
-parameters. Options include: using the FM posterior as informative priors in a
-next calibration pass; applying physical constraints from Bedmap-derived
-ice-sheet geometry to regularize those directions; or reparameterizing the AIS
-component into fewer identifiable combinations.
-
-### G. LWS uncertainty propagation
+### 6. LWS uncertainty propagation
 
 LWS uncertainty (~0.16 cm by 2100) is currently either ignored (`:central`) or
 represented by a single unseeded draw (`:random`). Proper propagation would
 require either a per-draw LWS sample (adding one dimension to the ensemble) or
 an importance-weighted LWS treatment.
 
-**Assessment:** LWS is a minor term relative to AIS/GIS uncertainty; this is low
-priority unless the analysis specifically targets near-term SLR where LWS is a
-larger fractional contributor.
+**Assessment:** LWS is a minor term relative to AIS/GIS uncertainty; genuinely
+low priority unless the analysis specifically targets near-term SLR where LWS
+is a larger fractional contributor.
