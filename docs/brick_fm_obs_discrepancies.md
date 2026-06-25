@@ -65,11 +65,15 @@ and does not represent a comparable bias in future projections.
 **Magnitude:** FaIR-driven GIS at 1900: ~0.53 cm vs Frederikse 2.1 cm and IGCC obs 1.45 cm.
 
 **Root cause:** GIS in BRICK scales with GMST only (OHC input is irrelevant for
-this component). The gap is driven by FaIR GMST running ~0.1 °C cooler than IGCC
-observational estimates over the historical period — not a BRICK calibration issue.
+this component). The gap is driven by the FaIR mean trajectory running ~0.1 °C
+below recent IGCC observations at 2024 — not a BRICK calibration issue. As
+discussed in the rationale document (section 5/D), this reflects the emissions
+scenario: RFF-SP draws follow SSP2-4.5-like paths, whereas real-world emissions
+post-2015 ran warmer (faster aerosol reductions, higher CH4).
 
-**Status:** Accepted. Would narrow if FaIR were calibrated to IGCC rather than
-the CMIP ensemble mean. No BRICK recalibration needed.
+**Status:** Accepted. Would narrow if the calibration forcing were updated to
+use observed historical emissions (e.g. Smith 2024 splice) rather than an
+SSP2-4.5-based trajectory. No BRICK recalibration needed.
 
 ---
 
