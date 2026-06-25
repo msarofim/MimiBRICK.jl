@@ -141,8 +141,7 @@ OHC trajectory, which rises ~+35 ZJ over 1900–1971 — substantially larger
 than modern observation-anchored products over the same period (~+14 ZJ for
 FaIR mean, Zanna+Cheng). The FM calibrates against the FaIR mean, which lies
 close to the IGCC 2024 multi-product compilation (Palmer & von Schuckmann;
-+38 vs +37 ZJ over 1971–2018). Among modern products, Cheng et al. 2024 IAPv4.2 (ESSD 16:3517, +31 ZJ)
-sits on the low side; IGCC and FaIR are in close agreement.
++38 vs +37 ZJ over 1971–2018).
 
 A residual ~+0.5 cm TE overshoot vs NOAA steric observations persists at 2025,
 even after the posterior was re-fit against post-2018 NOAA steric data (te_α
