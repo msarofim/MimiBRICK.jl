@@ -66,6 +66,14 @@ sum of components matches the total GMSL within uncertainty, so the individual
 component likelihoods and the total GMSL likelihood (Dangendorf) are not
 independent — they reinforce each other rather than conflicting.
 
+Frederikse 2020 also extends the per-component record back to 1900, providing
+a longer calibration window than the original BRICK targets. The original
+BRICK 2.0 calibration used only the CSIRO total GMSL reconstruction (Church &
+White 2011, extended to 2013) for the global constraint, with no per-component
+targets reaching back to 1900. A longer record with per-component constraints
+is more informative for parameters governing early-century dynamics (e.g.,
+glacier LIA disequilibrium, initial AIS state).
+
 ---
 
 ### 4. Post-2018 observational extension (GRACE-FO, GlaMBIE, NOAA)
