@@ -38,8 +38,8 @@ Function Arguments:
                         ssp245, ssp370, ssp460, ssp585, ssp534-over
       start_year      = initial year of the simulation period
       end_year        = ending year of the simulation period
-      glacier_model   = :gsic (default, Wigley-Raper-Bakker) or :mengel
-                        (Mengel-2016 two-timescale emulator; see PR1)
+      glacier_model   = :mengel (default, Mengel-2016 two-timescale emulator) or
+                        :gsic (original Wigley-Raper-Bakker single-reservoir)
       lws             = land-water-storage treatment:
                           :random  (default) = unseeded draw from N(0.0003, 0.00018) m/yr
                           :central           = deterministic 0.3 mm/yr mean (recommended
@@ -47,7 +47,7 @@ Function Arguments:
                           :zero              = no LWS contribution
 """
 function get_model(;ssprcp_scenario::String="ssp245", start_year::Int=1850, end_year::Int=2020,
-                    glacier_model::Symbol=:gsic, lws::Symbol=:random)
+                    glacier_model::Symbol=:mengel, lws::Symbol=:random)
 
     glacier_model in (:gsic, :mengel) || error("get_model: glacier_model must be :gsic or :mengel (got :$glacier_model)")
     lws in (:random, :central, :zero) || error("get_model: lws must be :random, :central, or :zero (got :$lws)")
