@@ -138,6 +138,27 @@ this at the distribution mean without requiring users to manage external seeds.
 
 ---
 
+### 7. Antarctic equilibrium ocean temperature (`ais_ocean_temperature₀`) as a free parameter
+
+**Change:** `ais_ocean_temperature₀` — the baseline sub-shelf ocean temperature
+driving Antarctic melt — is treated as a free parameter in the FM MCMC
+calibration. It was fixed at its default value (0.72 °C) in the original BRICK
+2.0 calibration.
+
+**Rationale:** The original calibration held most AIS geometry and physics
+parameters free (slope, bed height, flow, precipitation, runoff height, etc.)
+but fixed the equilibrium ocean temperature, which is a primary control on the
+rate of basal melt and thus on the long-run AIS contribution to SLR. Freeing
+`ais_ocean_temperature₀` allows the posterior to adjust the AIS response to
+the updated calibration forcing rather than inheriting a default value not
+conditioned on the Frederikse 2020 AIS component targets or the GRACE-FO
+post-2018 extension. Conversely, the FM calibration fixes many of the original
+AIS geometry parameters (slope, bed height, flow rate, runoff height,
+precipitation, c) at their prior medoids, concentrating the free degrees of
+freedom on parameters that most directly govern the magnitude and timing of melt.
+
+---
+
 ## Targets for Future Improvement
 
 ### A. Residual thermal expansion overshoot
