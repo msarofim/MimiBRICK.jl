@@ -232,7 +232,31 @@ versions show the same gap when fed the same emissions.
 to use observed historical emissions (e.g. Smith 2024 splice) rather than an
 SSP2-4.5-based trajectory.
 
-### E. LWS uncertainty propagation
+### E. AIS geometry parameters currently fixed at prior medoids
+
+The FM calibration frees `ais_ocean_temperature₀` (the primary control on
+basal melt magnitude) but fixes the remaining AIS geometry parameters (slope,
+bed height, flow rate, runoff height, precipitation, c, μ) at their prior
+medoids. This was necessary to avoid poorly-identified directions in parameter
+space — these parameters are highly correlated in the likelihood, and freeing
+them produces flat posterior surfaces and poor MCMC mixing.
+
+The limitation is that uncertainty in the structural response shape of the AIS
+(as opposed to the melt rate magnitude) is suppressed. Since the geometry
+parameters set the grounding-line retreat dynamics and the precipitation
+compensation, they interact with `ais_ocean_temperature₀`: the posterior can
+adjust the rate but not the shape of the AIS response. If the prior medoids
+are poorly calibrated for FM forcing (which differs from the SNEASY forcing
+against which the original priors were implicitly set), systematic AIS bias
+could result without the posterior being able to correct it.
+
+**Path forward:** Address the identifiability problem before freeing these
+parameters. Options include: using the FM posterior as informative priors in a
+next calibration pass; applying physical constraints from Bedmap-derived
+ice-sheet geometry to regularize those directions; or reparameterizing the AIS
+component into fewer identifiable combinations.
+
+### G. LWS uncertainty propagation
 
 LWS uncertainty (~0.16 cm by 2100) is currently either ignored (`:central`) or
 represented by a single unseeded draw (`:random`). Proper propagation would
