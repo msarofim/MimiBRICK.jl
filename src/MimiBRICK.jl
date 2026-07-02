@@ -16,35 +16,47 @@ include(joinpath("components", "thermal_expansion_component.jl"))
 # include creation functions for two other model variants
 include(joinpath("create_models", "SNEASY_BRICK.jl"))
 include(joinpath("create_models", "BRICK_DOECLIM.jl"))
+include(joinpath("create_models", "BRICK_FAIR.jl"))
 
 # include other helper functions
 include(joinpath("downscale.jl"))
+include(joinpath("brick_param_updates.jl"))
 
 # include calibration functions
 include(joinpath("calibration/main_calibration.jl"))
 
 # function to create 'Building blocks for Relevant Ice and Climate Knowledge' (BRICK) model.
 """
-    get_model(;ssprcp_scenario::String="RCP85", start_year::Int=1850, end_year::Int=2020)
+    get_model(; ssprcp_scenario, start_year, end_year, glacier_model, lws)
 
-Return a MimiBRICK model instance that can be modified and run.
+Return a MimiBRICK model instance driven by pre-computed SNEASY forcing.
 
 Function Arguments:
 
-      ssprcp_scenario = (SSP-)RCP scenario for exogenous forcing; 
-                        valid values: RCP26, RCP45, RCP60, RCP85, ssp119, ssp126, ssp245, ssp370, ssp460, ssp585, ssp534-over
+      ssprcp_scenario = (SSP-)RCP scenario for exogenous forcing;
+                        valid values: RCP26, RCP45, RCP60, RCP85, ssp119, ssp126,
+                        ssp245, ssp370, ssp460, ssp585, ssp534-over
       start_year      = initial year of the simulation period
       end_year        = ending year of the simulation period
+      glacier_model   = :mengel (default, Mengel-2016 two-timescale emulator) or
+                        :gsic (original Wigley-Raper-Bakker single-reservoir)
+      lws             = land-water-storage treatment:
+                          :random  (default) = unseeded draw from N(0.0003, 0.00018) m/yr
+                          :central           = deterministic 0.3 mm/yr mean (recommended
+                                               for reproducible ensemble runs)
+                          :zero              = no LWS contribution
 """
-function get_model(;ssprcp_scenario::String="ssp245", start_year::Int=1850, end_year::Int=2020, glacier_model::Symbol = :gsic)
+function get_model(;ssprcp_scenario::String="ssp245", start_year::Int=1850, end_year::Int=2020,
+                    glacier_model::Symbol=:mengel, lws::Symbol=:random)
 
     glacier_model in (:gsic, :mengel) || error("get_model: glacier_model must be :gsic or :mengel (got :$glacier_model)")
+    lws in (:random, :central, :zero) || error("get_model: lws must be :random, :central, or :zero (got :$lws)")
 
     #-----------------------#
     # ----- Load Data ----- #
     #-----------------------#
 
-    # Load exogenous time-series for global surface temperature and ocean heat content (output from SNEASY under RCP8.5).
+    # Load pre-computed SNEASY scenario output for global surface temperature and ocean heat content.
     temperature_scenario = DataFrame(load(joinpath(@__DIR__, "..", "data", "model_data", "sneasy_temperature_"*ssprcp_scenario*"_1850_2300_07-06-2026.csv")))
     oceanheat_scenario   = DataFrame(load(joinpath(@__DIR__, "..", "data", "model_data", "sneasy_oceanheat_"*ssprcp_scenario*"_1850_2300_07-06-2026.csv")))
 
@@ -134,7 +146,11 @@ function get_model(;ssprcp_scenario::String="ssp245", start_year::Int=1850, end_
 
     update_param!(brick, :landwater_storage, :lws₀, 0.0)
     update_param!(brick, :landwater_storage, :first_projection_year, 2018)
-    update_param!(brick, :landwater_storage, :lws_random_sample, rand(Normal(0.0003, 0.00018), length(start_year:end_year)))
+    n = length(start_year:end_year)
+    lws_rates = lws === :central ? fill(0.0003, n) :
+                lws === :zero    ? zeros(n) :
+                rand(Normal(0.0003, 0.00018), n)   # :random (default)
+    update_param!(brick, :landwater_storage, :lws_random_sample, lws_rates)
 
     # ----- Set Parameters With Common Values Across Components ----- #
 
@@ -176,6 +192,28 @@ function get_model(;ssprcp_scenario::String="ssp245", start_year::Int=1850, end_
 
     # Return BRICK model.
     return brick
+end
+
+"""
+    set_external_forcing!(m, gmst, ohc)
+
+Override the exogenous GMST and ocean interior heat content on a `get_model`-built
+BRICK instance with external (e.g. FaIR) forcing trajectories.
+
+Arguments:
+  gmst : global mean surface temperature anomaly relative to 1850–1900 (°C),
+         length must equal the model time dimension
+  ohc  : cumulative ocean heat content stock (1×10²² J), same length
+
+Note: only valid for `get_model`-built models, which expose a shared
+`:model_global_surface_temperature` parameter. Not applicable to
+`create_brick_doeclim` or `create_sneasy_brick` models, where temperature
+is computed internally by the coupled climate component.
+"""
+function set_external_forcing!(m, gmst::Vector{<:Real}, ohc::Vector{<:Real})
+    update_param!(m, :model_global_surface_temperature, gmst)
+    update_param!(m, :thermal_expansion, :ocean_heat_interior, ohc)
+    return m
 end
 
 end # Module

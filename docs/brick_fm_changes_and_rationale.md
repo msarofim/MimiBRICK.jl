@@ -1,0 +1,264 @@
+# BRICK-FM: Changes from the Original MimiBRICK Calibration and Their Rationale
+
+This document describes each methodological departure from the original MimiBRICK
+(Wong et al. 2022) calibration, the physical or statistical motivation for the
+change, and known remaining limitations flagged as candidates for future work.
+
+---
+
+## Changes
+
+### 1. Mengel-2016 two-timescale glacier emulator (replaces Wigley-Raper-Bakker)
+
+**Change:** The default single-reservoir glaciers-and-small-ice-caps component
+(Wigley-Raper-Bakker, WRB) is replaced by the Mengel et al. 2016 (PNAS 113:2597)
+temperature-dependent-equilibrium emulator with two relaxation timescales.
+
+**Rationale:** The WRB formulation leads to the behavior that sustained
+temperature above the equilibrium threshold eventually melts the *entire* glacier
+reservoir. Physical glaciers and ice caps retain a temperature-appropriate remnant
+at any finite warming level (Marzeion et al. 2012). This matters for projections
+because WRB over-depletes the reservoir under sustained future warming, suppressing
+late-21st-century and post-2100 glacier contributions.
+
+The Mengel emulator uses a saturating equilibrium S_eq(T) = a(1 − exp(−b(T − T_LIA))),
+which asymptotes to a finite maximum `a`. A sustained warming T* commits only S_eq(T*)
+< a, preserving a temperature-appropriate remnant. The two timescales (τ_fast ≈ 40 yr,
+τ_slow ≈ 200–400 yr, calibrated prior mean 300 yr) reflect the observed glacier size distribution: small, low-elevation
+glaciers respond quickly; large, high-altitude ice caps respond slowly. A single
+timescale cannot simultaneously fit the rapid early-20th-century discharge and the
+slower modern rate.
+
+The LIA-disequilibrium offset (T_LIA < 0, relative to 1850-1900) gives glaciers a
+non-zero equilibrium contribution at the start of the simulation, directly simulating
+the "committed" melt from post-LIA warming that predates the forcing window — without
+requiring an external natural-melt budget or an anthropogenic/natural forcing split.
+
+---
+
+### 2. Dangendorf 2024 total GMSL (replaces Church & White 2011)
+
+**Change:** The total GMSL calibration target is updated from Church & White (2011)
+to Dangendorf et al. (2024).
+
+**Rationale:** Church & White (2011) relied on tide-gauge networks without GPS-based
+vertical land motion (VLM) corrections, introducing spatially correlated errors from
+subsidence and uplift at gauge sites. Dangendorf et al. (2024) applies GPS-derived
+VLM corrections to the full tide-gauge record and uses an improved spatial
+interpolation scheme, producing a more accurate reconstruction of the global-mean
+signal. The Dangendorf reconstruction also has better coverage of the Southern
+Hemisphere and updated uncertainty quantification.
+
+---
+
+### 3. Frederikse 2020 component data (replaces older component reconstructions)
+
+**Change:** Per-component calibration targets (AIS, GIS, GSIC, steric) are taken
+from Frederikse et al. (2020, Nature 584:70), which provides a closed sea-level
+budget for 1900–2018 using consistent data sources and uncertainty propagation.
+
+**Rationale:** Frederikse 2020 is the first reconstruction to close the global
+sea-level budget from individual components over the full 20th century. The
+consistent treatment across components — rather than assembling targets from
+disparate sources — reduces the risk of double-counting or mismatched reference
+periods. The closed-budget property provides an implicit consistency check: the
+sum of components matches the total GMSL within uncertainty, so the individual
+component likelihoods and the total GMSL likelihood (Dangendorf) are not
+independent — they reinforce each other rather than conflicting.
+
+Frederikse 2020 also extends the per-component record back to 1900, providing
+a longer calibration window than the original BRICK targets. The original
+BRICK 2.0 calibration used only the CSIRO total GMSL reconstruction (Church &
+White 2011, extended to 2013) for the global constraint, with no per-component
+targets reaching back to 1900. A longer record with per-component constraints
+is more informative for parameters governing early-century dynamics (e.g.,
+glacier LIA disequilibrium, initial AIS state).
+
+---
+
+### 4. Post-2018 observational extension (GRACE-FO, GlaMBIE, NOAA)
+
+**Change:** The calibration window is extended from 1900–2018 to 1900–2026 using
+modern satellite products for the post-2018 period.
+
+**Rationale:** A longer calibration window reduces posterior uncertainty and
+provides stronger constraints on parameters that govern future projections. The
+post-2018 period is also the most dynamically active in the observational record —
+accelerated Greenland and Antarctic mass loss, continued glacier retreat — and
+including it anchors the model's response to the warming regime most relevant for
+near-term projections.
+
+Sources: GRACE-FO JPL mascon (AIS, GIS), GlaMBIE 2025 (GSIC), NOAA NCEI
+thermosteric (steric), NOAA STAR altimetry (total GMSL, spliced to Dangendorf at
+2018).
+
+---
+
+### 5. Calibration driven by FaIR v2.2 (replaces SNEASY internal forcing)
+
+**Change:** The historical GMST and OHC trajectories used to drive BRICK during
+calibration are taken from the FaIR v2.2 ensemble mean rather than SNEASY's own
+internal output.
+
+**Rationale:** The original MimiBRICK calibration was conducted with SNEASY
+(Simple Nonlinear EArth SYstem model) as the coupled climate driver, so the BRICK
+parameters were implicitly conditioned on SNEASY's historical temperature and OHC
+trajectories. Using the same model for calibration and projection is internally
+consistent, but it makes the calibrated BRICK posterior specific to SNEASY's
+climate response — the posterior does not transfer cleanly to other climate drivers.
+
+FaIR v2.2 is more widely used in climate economics and impact modeling (EPA SC-GHG
+work, RFF-SP ensemble, IPI, GIVE) and provides OHC directly as an output, making
+it the natural choice for studies that couple BRICK to FaIR-driven ensembles. By
+calibrating BRICK against the FaIR mean trajectory, the posterior is conditioned on
+a climate forcing that is consistent with the projection runs.
+
+Note: the FaIR mean trajectory used for calibration runs approximately 0.1 °C
+below IGCC observational estimates at 2024. This reflects the emissions scenario
+(RFF-SP draws follow SSP2-4.5-like paths; real-world emissions post-2015 ran
+warmer due to faster aerosol reductions and higher CH4), not an intrinsic FaIR
+model bias. The effect slightly depresses GIS and GSIC contributions relative to
+observation-forced runs; see `brick_fm_obs_discrepancies.md` for details.
+
+---
+
+### 6. Deterministic land-water storage for reproducible ensemble runs
+
+**Change:** `create_brick_fair` (the recommended FM entry point) defaults to
+`lws=:central` (deterministic 0.3 mm/yr mean rate). `get_model` retains
+`lws=:random` for backward compatibility with upstream.
+
+**Rationale:** The original `get_model` draws LWS from N(0.0003, 0.00018) m/yr
+unseeded on every call, making results irreproducible build-to-build and
+representing LWS uncertainty by a single arbitrary realization rather than
+propagating it through the ensemble. For ensemble runs (the standard FM usage),
+a single fixed LWS realization is appropriate; the LWS uncertainty (~0.16 cm by
+2100) is small relative to the AIS/posterior spread. The `:central` option fixes
+this at the distribution mean without requiring users to manage external seeds.
+
+---
+
+### 7. Antarctic equilibrium ocean temperature (`ais_ocean_temperature₀`) as a free parameter
+
+**Change:** `ais_ocean_temperature₀` — the baseline sub-shelf ocean temperature
+driving Antarctic melt — is treated as a free parameter in the FM MCMC
+calibration. It was fixed at its default value (0.72 °C) in the original BRICK
+2.0 calibration.
+
+**Rationale:** The original calibration held most AIS geometry and physics
+parameters free (slope, bed height, flow, precipitation, runoff height, etc.)
+but fixed the equilibrium ocean temperature, which is a primary control on the
+rate of basal melt and thus on the long-run AIS contribution to SLR. Freeing
+`ais_ocean_temperature₀` allows the posterior to adjust the AIS response to
+the updated calibration forcing rather than inheriting a default value not
+conditioned on the Frederikse 2020 AIS component targets or the GRACE-FO
+post-2018 extension. Conversely, the FM calibration fixes many of the original
+AIS geometry parameters (slope, bed height, flow rate, runoff height,
+precipitation, c) at their prior medoids, concentrating the free degrees of
+freedom on parameters that most directly govern the magnitude and timing of melt.
+
+---
+
+## Targets for Future Improvement
+
+Targets are ordered roughly by the product of importance and tractability.
+The main judgement call is whether MICI (target 4) outranks GSIC structural
+work (target 3): if the primary use case is SC-CO2 or high-end risk assessment,
+MICI's impact on the marginal AIS T-sensitivity is the more consequential gap
+and could be promoted above GSIC.
+
+### 1. Update calibration forcing to observed historical emissions (Smith 2024 splice)
+
+The FaIR mean trajectory used for calibration runs ~0.1 °C below recent IGCC
+observational estimates at 2024, causing a ~0.5–1 cm GIS undershoot at that
+date. This gap reflects the emissions scenario (RFF-SP draws follow SSP2-4.5-like
+paths; real-world emissions post-2015 ran warmer due to faster aerosol reductions
+and higher CH4) rather than an intrinsic FaIR model bias.
+
+**Fix:** Swap the calibration FaIR mean trajectory for one driven by Smith 2024
+observed historical emissions spliced to the scenario at 2021. No model changes
+needed; re-run FaIR mean, re-run calibration. This is the easiest and most
+clearly-scoped of the improvements.
+
+### 2. Free AIS geometry parameters in a future calibration pass
+
+The FM calibration frees `ais_ocean_temperature₀` (the primary control on
+basal melt magnitude) but fixes the remaining AIS geometry parameters (slope,
+bed height, flow rate, runoff height, precipitation, c, μ) at their prior
+medoids, to avoid poorly-identified directions in parameter space. The
+limitation is that uncertainty in the structural response shape of the AIS is
+suppressed: the posterior can adjust the rate but not the shape of the AIS
+response. If the prior medoids are poorly calibrated for FM forcing (which
+differs from the SNEASY forcing against which the original priors were
+implicitly set), systematic AIS bias could result without the posterior being
+able to correct it.
+
+**Path forward:** Address identifiability before freeing these parameters.
+Options: use the FM posterior as informative priors in a next calibration pass;
+apply physical constraints from Bedmap-derived ice-sheet geometry to regularize
+those directions; or reparameterize the AIS component into fewer identifiable
+combinations. High potential impact on AIS projection spread and level.
+
+### 3. Residual thermal expansion overshoot
+
+The FM posterior calibrates `te_α` to ~0.164, roughly 3× Wong et al.'s
+original value of 0.057. The two values reflect different OHC forcing
+assumptions during calibration. Wong calibrated against SNEASY's internal
+OHC trajectory, which rises ~+35 ZJ over 1900–1971 — substantially larger
+than modern observation-anchored products over the same period (~+14 ZJ for
+FaIR mean, Zanna+Cheng). The FM calibrates against the FaIR mean, which lies
+close to the IGCC 2024 multi-product compilation (Palmer & von Schuckmann;
++38 vs +37 ZJ over 1971–2018).
+
+A residual ~+0.5 cm TE overshoot vs NOAA steric observations persists at 2025,
+even after re-fitting against post-2018 NOAA steric data (te_α shifted only
+0.164→0.159). FaIR OHC and IGCC already agree closely; the issue is a
+product-consistency gap between FaIR OHC and NOAA thermosteric that `te_α`
+as a single scalar cannot bridge. The residual is likely structural.
+
+**Potential fix:** Extend the calibration OHC target back to 1850 using a
+pre-ARGO reconstruction (e.g. Zanna 2019 spliced to IGCC at 1971) to better
+constrain the early-century period; or use a richer TE parameterization.
+Moderate effort; moderate impact (~0.5 cm).
+
+### 4. GSIC structural undershoot at 1900
+
+The Mengel emulator still undershoots the Frederikse GSIC contribution at 1900
+by ~4 cm (model −3.25 cm vs obs −7.27 cm). This is a structural limitation: the
+melt rate scales with temperature *level* rather than warming *rate*, so the model
+cannot simultaneously fit the rapid post-LIA discharge of the early 20th century
+and the slower modern rate without pushing `tau_fast` to its physical lower bound.
+
+**Potential fix:** A three-timescale emulator, or an explicit LIA committed-melt
+budget added to the two-timescale structure. Alternatively, a Marzeion-style
+natural melt baseline (separate from the temperature-forced term) could absorb
+the early-century residual. Higher effort; primarily affects historical fit
+quality rather than future projections.
+
+### 5. Marine ice cliff instability (MICI) in Antarctic Ice Sheet projections
+
+BRICK's AIS component does not include MICI. BRICK-Mengel does not produce
+conservative AIS projections overall — at SSP2-4.5 the median AIS @2100 is
+~43 cm vs MAGICC-Nauels ~11 cm, and BRICK's p95 total SLR (108 cm) exceeds
+MAGICC's (87 cm). BRICK's AIS component accumulates a large time-integrated
+contribution through ocean-temperature-driven melt that more than offsets the
+absence of MICI for scenario-level projections.
+
+However, there is a level-vs-marginal inversion relevant to SC-CO2: MAGICC's
+AIS marginal T-sensitivity is ~6× higher than BRICK-Mengel's at 2100. For
+applications focused on the extreme upper tail or on SC-CO2, MICI could be
+the most consequential gap, warranting promotion above targets 3 and 4.
+
+**Path forward:** Structural changes to the AIS component; likely merits its
+own PR. Highest effort of all targets listed here.
+
+### 6. LWS uncertainty propagation
+
+LWS uncertainty (~0.16 cm by 2100) is currently either ignored (`:central`) or
+represented by a single unseeded draw (`:random`). Proper propagation would
+require either a per-draw LWS sample (adding one dimension to the ensemble) or
+an importance-weighted LWS treatment.
+
+**Assessment:** LWS is a minor term relative to AIS/GIS uncertainty; genuinely
+low priority unless the analysis specifically targets near-term SLR where LWS
+is a larger fractional contributor.
